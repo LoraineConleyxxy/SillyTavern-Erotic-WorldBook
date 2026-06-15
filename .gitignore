@@ -4,4 +4,5 @@ __pycache__/
 node_modules/
 *.log
 .DS_Store
+!/index.html
 创意/成品/创意玩法知识网络/归档/
