@@ -1,0 +1,4 @@
+interface:
+  display_name: "SillyTavern DS Worldbook"
+  short_description: "用 DeepSeek 提取小说玩法，分类入世界书并刷新快捷回复"
+  default_prompt: "从本地 TXT 小说提取玩法，按十二卷分类，追加到 SillyTavern 世界书并重建快捷回复。"
