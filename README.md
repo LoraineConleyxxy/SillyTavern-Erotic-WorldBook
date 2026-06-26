@@ -1,1 +1,20 @@
-# SillyTavern-Erotic-WorldBook
+# SillyTavern Erotic WorldBook
+
+当前发布线：`v2.7-source-rebuild`
+
+这是按资料源全量重建的 SillyTavern 世界书与 Quick Reply 发布页。v2 版不再从旧 v1 世界书追加条目，而是从清洗后的资料源重新生成。
+
+## 导入文件
+
+- `创意/成品/v2/极品调教大世界书_v2.json`
+- `创意/成品/v2/极品调教快捷回复_v2_来源无状态版.json`
+- `创意/成品/v2/极品调教快捷回复_v2_十二卷无状态版.json`
+
+## v2.7 摘要
+
+- 条目：1120
+- 来源：19
+- 来源类型：男性调教类小说、女性视角小说、百合类小说
+- 当前来源新增：月见｜深渊魔帝旧版、月见｜深渊魔帝remake
+
+网页浏览入口：`index.html`
