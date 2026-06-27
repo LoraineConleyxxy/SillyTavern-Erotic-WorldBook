@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>极品调教大世界书 v2 · 按书分类</title>
+  <title>极品调教大世界书 v2 · 按玩法分类</title>
   <style>
     :root {
       color-scheme: dark;
@@ -86,6 +86,28 @@
       color: var(--muted);
       font-size: 12px;
     }
+    .page-links {
+      padding: 12px 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .page-links a {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--text);
+      text-align: center;
+      text-decoration: none;
+      padding: 9px 8px;
+      font-size: 13px;
+    }
+    .page-links a.active {
+      border-color: var(--cyan);
+      background: var(--cyan);
+      color: #071114;
+    }
     .downloads {
       padding: 14px 22px;
       display: grid;
@@ -110,28 +132,6 @@
       font-size: 12px;
       white-space: nowrap;
     }
-    .page-links {
-      padding: 12px 22px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      border-bottom: 1px solid var(--line);
-    }
-    .page-links a {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel);
-      color: var(--text);
-      text-align: center;
-      text-decoration: none;
-      padding: 9px 8px;
-      font-size: 13px;
-    }
-    .page-links a.active {
-      border-color: var(--cyan);
-      background: var(--cyan);
-      color: #071114;
-    }
     .filters {
       padding: 14px 22px 12px;
       border-bottom: 1px solid var(--line);
@@ -147,18 +147,13 @@
       font-size: 13px;
     }
     input:focus, select:focus { border-color: var(--cyan); }
-    .filter-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .source-list {
+    select { margin-top: 8px; }
+    .category-list {
       overflow: auto;
       padding: 12px;
       flex: 1;
     }
-    .source-btn {
+    .category-btn {
       width: 100%;
       border: 1px solid transparent;
       border-radius: 8px;
@@ -172,12 +167,12 @@
       gap: 8px;
       font-size: 13px;
     }
-    .source-btn:hover { background: var(--panel); }
-    .source-btn.active {
+    .category-btn:hover { background: var(--panel); }
+    .category-btn.active {
       background: var(--panel-2);
       border-color: var(--gold);
     }
-    .source-btn small {
+    .category-btn small {
       color: var(--muted);
       font-size: 11px;
       margin-top: 4px;
@@ -196,7 +191,7 @@
     main {
       min-width: 0;
       display: grid;
-      grid-template-rows: auto auto minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
     }
     .topbar {
       display: flex;
@@ -221,28 +216,6 @@
       color: var(--green);
       font-size: 12px;
       white-space: nowrap;
-    }
-    .category-tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding: 12px 24px;
-      border-bottom: 1px solid var(--line);
-    }
-    .tab {
-      border: 1px solid var(--line);
-      background: var(--panel);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 8px 12px;
-      white-space: nowrap;
-      cursor: pointer;
-      font-size: 13px;
-    }
-    .tab.active {
-      border-color: var(--cyan);
-      color: #071114;
-      background: var(--cyan);
     }
     .workspace {
       min-height: 0;
@@ -317,9 +290,7 @@
       padding: 28px;
       background: rgba(255, 255, 255, 0.02);
     }
-    .error {
-      color: var(--red);
-    }
+    .error { color: var(--red); }
     @media (max-width: 900px) {
       .shell { grid-template-columns: 1fr; }
       aside { min-height: 58vh; border-right: 0; border-bottom: 1px solid var(--line); }
@@ -335,12 +306,12 @@
       <header>
         <div class="eyebrow">Source-driven v2</div>
         <h1>极品调教大世界书</h1>
-        <p class="subtitle">按资料源重建的 v2 版世界书与快捷回复。当前页按书名与来源浏览。</p>
+        <p class="subtitle">同一份 v2 数据，按玩法分类浏览；每个分类下一层就是实际条目。</p>
       </header>
       <section class="stats" id="stats"></section>
       <nav class="page-links" aria-label="浏览方式">
-        <a class="active" href="./">按书分类</a>
-        <a href="category.html">按玩法分类</a>
+        <a href="./">按书分类</a>
+        <a class="active" href="category.html">按玩法分类</a>
       </nav>
       <section class="downloads">
         <a class="download" href="创意/成品/v2/极品调教大世界书_v2.json" download>主世界书 <span>JSON</span></a>
@@ -349,13 +320,10 @@
         <a class="download" href="创意/成品/v2/重建报告.md">重建报告 <span>MD</span></a>
       </section>
       <section class="filters">
-        <input id="query" placeholder="搜索来源或条目">
-        <div class="filter-row">
-          <select id="typeFilter"></select>
-          <select id="categoryFilter"></select>
-        </div>
+        <input id="query" placeholder="搜索分类、来源或条目">
+        <select id="typeFilter"></select>
       </section>
-      <nav class="source-list" id="sourceList"></nav>
+      <nav class="category-list" id="categoryList"></nav>
     </aside>
     <main>
       <section class="topbar">
@@ -365,7 +333,6 @@
         </div>
         <div class="status" id="status">loading</div>
       </section>
-      <section class="category-tabs" id="categoryTabs"></section>
       <section class="workspace">
         <div class="entry-list" id="entryList"></div>
         <article class="reader" id="reader"></article>
@@ -375,16 +342,27 @@
   <script>
     const manifestUrl = "创意/成品/v2/资料源索引_v2.json";
     const worldbookUrl = "创意/成品/v2/极品调教大世界书_v2.json";
+    const categoryOrder = [
+      "卷一：极致恶堕与崩坏",
+      "卷二：深度规训与服从",
+      "卷三：机械道具与拘束",
+      "卷四：直接做爱与性交",
+      "卷六：催眠与常识篡改",
+      "卷七：异种孕育与魔物",
+      "卷八：高潮控制与排泄",
+      "卷九：公开暴露与社死",
+      "卷十：强制发情与体质改造",
+      "卷十一：服装与换装Play",
+      "卷十二：纯爱与温存"
+    ];
     const state = {
       manifest: null,
       worldbook: null,
       entries: [],
       byUid: new Map(),
-      activeSource: "",
-      activeCategory: "全部",
+      activeCategory: "",
       query: "",
       type: "全部",
-      category: "全部",
       activeUid: null
     };
 
@@ -396,6 +374,12 @@
     const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
     }[c]));
+    const sortedCategories = (categories) => [...categories].sort((a, b) => {
+      const ia = categoryOrder.indexOf(a);
+      const ib = categoryOrder.indexOf(b);
+      if (ia !== -1 || ib !== -1) return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+      return a.localeCompare(b, "zh-CN");
+    });
 
     async function loadData() {
       try {
@@ -413,7 +397,7 @@
         state.worldbook = worldbook;
         state.entries = manifest.entries || [];
         Object.values(worldbook.entries || {}).forEach((entry) => state.byUid.set(Number(entry.uid), entry));
-        state.activeSource = firstSource();
+        state.activeCategory = firstCategory();
         renderAll();
         $("status").textContent = "ready";
       } catch (err) {
@@ -425,104 +409,88 @@
       }
     }
 
-    function firstSource() {
-      const source = state.entries.find((entry) => entry.source_label);
-      return source ? source.source_label : "";
+    function firstCategory() {
+      return sortedCategories(new Set(state.entries.map((entry) => entry.category).filter(Boolean)))[0] || "";
     }
 
     function renderAll() {
       renderStats();
-      renderFilters();
-      renderSources();
-      renderTabs();
+      renderTypeFilter();
+      renderCategories();
       renderEntries();
       renderReader();
     }
 
     function renderStats() {
       const m = state.manifest;
-      const importedSources = (m.sources || []).filter((s) => (s.imported_entries || 0) > 0).length;
+      const importedSources = (m.sources || []).filter((source) => (source.imported_entries || 0) > 0).length;
+      const categoryCount = new Set(state.entries.map((entry) => entry.category).filter(Boolean)).size;
       $("stats").innerHTML = [
         ["版本", String(m.version || "").replace("-source-rebuild", "")],
-        ["条目", m.total_entries || state.entries.length],
-        ["来源", importedSources],
-        ["快捷回复", "2 套"]
+        ["条目", state.entries.length],
+        ["分类", categoryCount],
+        ["来源", importedSources]
       ].map(([label, value]) => `<div class="stat"><strong>${esc(value)}</strong><span>${esc(label)}</span></div>`).join("");
     }
 
-    function renderFilters() {
-      const types = ["全部", ...new Set(state.entries.map((e) => e.source_type).filter(Boolean))];
-      const cats = ["全部", ...new Set(state.entries.map((e) => e.category).filter(Boolean))];
+    function renderTypeFilter() {
+      const types = ["全部", ...new Set(state.entries.map((entry) => entry.source_type).filter(Boolean))];
       $("typeFilter").innerHTML = types.map((type) => `<option ${type === state.type ? "selected" : ""}>${esc(type)}</option>`).join("");
-      $("categoryFilter").innerHTML = cats.map((cat) => `<option ${cat === state.category ? "selected" : ""}>${esc(cleanCategory(cat))}</option>`).join("");
     }
 
     function filteredEntries() {
       const q = state.query.trim().toLowerCase();
       return state.entries.filter((entry) => {
         if (state.type !== "全部" && entry.source_type !== state.type) return false;
-        if (state.category !== "全部" && entry.category !== state.category) return false;
         if (!q) return true;
         return [entry.title, entry.source_label, entry.source_type, entry.category, entry.subcategory]
           .join("\n").toLowerCase().includes(q);
       });
     }
 
-    function renderSources() {
-      const groups = new Map();
-      filteredEntries().forEach((entry) => {
-        const key = entry.source_label || "未命名来源";
-        if (!groups.has(key)) groups.set(key, { label: key, type: entry.source_type, count: 0 });
-        groups.get(key).count += 1;
-      });
-      const sources = [...groups.values()].sort((a, b) => a.type.localeCompare(b.type, "zh-CN") || a.label.localeCompare(b.label, "zh-CN"));
-      if (sources.length && !sources.some((source) => source.label === state.activeSource)) {
-        state.activeSource = sources[0].label;
-        state.activeCategory = "全部";
+    function renderCategories() {
+      const counts = new Map();
+      filteredEntries().forEach((entry) => counts.set(entry.category, (counts.get(entry.category) || 0) + 1));
+      const categories = sortedCategories(counts.keys());
+      if (categories.length && !counts.has(state.activeCategory)) {
+        state.activeCategory = categories[0];
         state.activeUid = null;
       }
-      $("sourceList").innerHTML = sources.map((source) => `
-        <button class="source-btn ${source.label === state.activeSource ? "active" : ""}" data-source="${esc(source.label)}">
-          <span>${esc(source.label)}<small>${esc(source.type || "未分类来源")}</small></span>
-          <span class="count-pill">${source.count}</span>
+      $("categoryList").innerHTML = categories.map((category) => `
+        <button class="category-btn ${category === state.activeCategory ? "active" : ""}" data-category="${esc(category)}">
+          <span>${esc(cleanCategory(category))}<small>${esc(category)}</small></span>
+          <span class="count-pill">${counts.get(category)}</span>
         </button>
-      `).join("") || '<div class="empty">没有匹配来源。</div>';
+      `).join("") || '<div class="empty">没有匹配分类。</div>';
     }
 
-    function sourceEntries() {
-      return filteredEntries().filter((entry) => entry.source_label === state.activeSource);
-    }
-
-    function renderTabs() {
-      const entries = sourceEntries();
-      const counts = new Map();
-      counts.set("全部", entries.length);
-      entries.forEach((entry) => counts.set(entry.category, (counts.get(entry.category) || 0) + 1));
-      if (!counts.has(state.activeCategory)) state.activeCategory = "全部";
-      $("categoryTabs").innerHTML = [...counts.entries()].map(([cat, count]) => `
-        <button class="tab ${cat === state.activeCategory ? "active" : ""}" data-category="${esc(cat)}">
-          ${esc(cat === "全部" ? "全部" : cleanCategory(cat))} (${count})
-        </button>
-      `).join("");
-      const first = entries[0];
-      $("activeTitle").textContent = state.activeSource || "未选择来源";
-      $("activeMeta").textContent = first ? `${first.source_type} · ${entries.length} 条` : "没有匹配条目";
+    function categoryEntries() {
+      return filteredEntries().filter((entry) => entry.category === state.activeCategory);
     }
 
     function visibleEntries() {
-      return sourceEntries().filter((entry) => state.activeCategory === "全部" || entry.category === state.activeCategory)
-        .sort((a, b) => a.category.localeCompare(b.category, "zh-CN") || a.title.localeCompare(b.title, "zh-CN"));
+      return categoryEntries()
+        .sort((a, b) =>
+          (a.subcategory || "").localeCompare(b.subcategory || "", "zh-CN") ||
+          (a.source_type || "").localeCompare(b.source_type || "", "zh-CN") ||
+          (a.source_label || "").localeCompare(b.source_label || "", "zh-CN") ||
+          a.title.localeCompare(b.title, "zh-CN")
+        );
     }
 
     function renderEntries() {
       const entries = visibleEntries();
-      if (entries.length && !entries.some((entry) => entry.uid === state.activeUid)) {
+      $("activeTitle").textContent = cleanCategory(state.activeCategory) || "未选择分类";
+      $("activeMeta").textContent = entries.length ? `${entries.length} 条 · ${state.manifest.version || ""}` : "没有匹配条目";
+      if (!entries.length) {
+        state.activeUid = null;
+      } else if (!entries.some((entry) => entry.uid === state.activeUid)) {
         state.activeUid = entries[0].uid;
       }
       $("entryList").innerHTML = entries.map((entry) => `
         <button class="entry-btn ${entry.uid === state.activeUid ? "active" : ""}" data-uid="${entry.uid}">
           <div class="entry-title">${esc(entry.title)}</div>
-          <div class="entry-meta">${esc(cleanCategory(entry.category))} · ${esc(entry.subcategory || "综合")}</div>
+          <div class="entry-meta">${esc(entry.subcategory || "综合")} · ${esc(entry.source_label)} · ${esc(entry.source_type)}</div>
         </button>
       `).join("") || '<div class="empty">没有匹配条目。</div>';
     }
@@ -537,7 +505,7 @@
       $("reader").innerHTML = `
         <div class="reader-card">
           <h3>${esc(meta.title)}</h3>
-          <div class="meta">UID ${esc(meta.uid)} · ${esc(meta.source_label)} · ${esc(cleanCategory(meta.category))} · ${esc(meta.subcategory || "综合")}</div>
+          <div class="meta">UID ${esc(meta.uid)} · ${esc(cleanCategory(meta.category))} · ${esc(meta.subcategory || "综合")} · ${esc(meta.source_label)}</div>
           <div class="content">${esc(entry.content || "")}</div>
         </div>
       `;
@@ -546,47 +514,23 @@
     $("query").addEventListener("input", (event) => {
       state.query = event.target.value;
       state.activeUid = null;
-      renderSources();
-      renderTabs();
+      renderCategories();
       renderEntries();
       renderReader();
     });
     $("typeFilter").addEventListener("change", (event) => {
       state.type = event.target.value;
       state.activeUid = null;
-      state.activeCategory = "全部";
-      renderSources();
-      renderTabs();
+      renderCategories();
       renderEntries();
       renderReader();
     });
-    $("categoryFilter").addEventListener("change", (event) => {
-      const cats = ["全部", ...new Set(state.entries.map((e) => e.category).filter(Boolean))];
-      state.category = cats[event.target.selectedIndex] || "全部";
-      state.activeUid = null;
-      state.activeCategory = "全部";
-      renderSources();
-      renderTabs();
-      renderEntries();
-      renderReader();
-    });
-    $("sourceList").addEventListener("click", (event) => {
-      const btn = event.target.closest(".source-btn");
-      if (!btn) return;
-      state.activeSource = btn.dataset.source;
-      state.activeCategory = "全部";
-      state.activeUid = null;
-      renderSources();
-      renderTabs();
-      renderEntries();
-      renderReader();
-    });
-    $("categoryTabs").addEventListener("click", (event) => {
-      const btn = event.target.closest(".tab");
+    $("categoryList").addEventListener("click", (event) => {
+      const btn = event.target.closest(".category-btn");
       if (!btn) return;
       state.activeCategory = btn.dataset.category;
       state.activeUid = null;
-      renderTabs();
+      renderCategories();
       renderEntries();
       renderReader();
     });
