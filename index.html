@@ -113,7 +113,7 @@
     .page-links {
       padding: 12px 22px;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 8px;
       border-bottom: 1px solid var(--line);
     }
@@ -341,6 +341,7 @@
       <nav class="page-links" aria-label="浏览方式">
         <a class="active" href="./">按书分类</a>
         <a href="category.html">按玩法分类</a>
+        <a href="legacy.html">旧版原始页</a>
       </nav>
       <section class="downloads">
         <a class="download" href="创意/成品/v2/极品调教大世界书_v2.json" download>主世界书 <span>JSON</span></a>
