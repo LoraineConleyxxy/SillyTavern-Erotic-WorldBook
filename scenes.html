@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>极品调教剧情场景 · 按小说浏览</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101114;
+      --panel: #181a20;
+      --panel-2: #20232b;
+      --line: #313640;
+      --text: #eceff3;
+      --muted: #9da7b3;
+      --gold: #d8b35c;
+      --cyan: #70c7d8;
+      --green: #84c28a;
+      --red: #d36b6b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif;
+      letter-spacing: 0;
+    }
+    button, input, select { font: inherit; }
+    a { color: inherit; }
+    .shell {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+    aside {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: #15171c;
+      border-right: 1px solid var(--line);
+    }
+    header {
+      padding: 22px 22px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      color: var(--gold);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 8px 0 6px;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+    .stat {
+      min-height: 64px;
+      padding: 10px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .stat strong {
+      display: block;
+      font-size: 21px;
+      line-height: 1.1;
+    }
+    .stat span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .page-links {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      padding: 12px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+    .page-links a {
+      padding: 9px 8px;
+      text-align: center;
+      text-decoration: none;
+      font-size: 13px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .page-links a.active {
+      color: #071114;
+      background: var(--cyan);
+      border-color: var(--cyan);
+    }
+    .downloads {
+      display: grid;
+      gap: 8px;
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--line);
+    }
+    .download {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 10px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .download:hover { border-color: var(--cyan); }
+    .download span {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .filters {
+      padding: 14px 22px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    input, select {
+      width: 100%;
+      padding: 10px 11px;
+      color: var(--text);
+      background: #0f1115;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      outline: none;
+      font-size: 13px;
+    }
+    input:focus, select:focus { border-color: var(--cyan); }
+    select { margin-top: 8px; }
+    .book-list {
+      flex: 1;
+      overflow: auto;
+      padding: 12px;
+    }
+    .book-btn {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      padding: 10px;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+    }
+    .book-btn:hover { background: var(--panel); }
+    .book-btn.active {
+      background: var(--panel-2);
+      border-color: var(--gold);
+    }
+    .book-title {
+      min-width: 0;
+      font-size: 13px;
+      line-height: 1.45;
+      overflow-wrap: anywhere;
+    }
+    .book-type {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+    .count-pill {
+      min-width: 34px;
+      height: 22px;
+      padding: 2px 8px;
+      color: #141414;
+      text-align: center;
+      font-size: 12px;
+      background: var(--gold);
+      border-radius: 999px;
+    }
+    main {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 24px;
+      background: #121419;
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar h2 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.3;
+    }
+    .topbar p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .icon-btn, .command-btn {
+      height: 38px;
+      color: var(--text);
+      cursor: pointer;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .icon-btn {
+      width: 38px;
+      padding: 0;
+      font-size: 18px;
+    }
+    .command-btn {
+      padding: 0 12px;
+      font-size: 13px;
+    }
+    .icon-btn:hover, .command-btn:hover { border-color: var(--cyan); }
+    .icon-btn:disabled, .command-btn:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+    .workspace {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(320px, 39%) minmax(0, 1fr);
+    }
+    .scene-list {
+      overflow: auto;
+      padding: 14px;
+      background: #111318;
+      border-right: 1px solid var(--line);
+    }
+    .scene-btn {
+      width: 100%;
+      min-height: 76px;
+      margin-bottom: 8px;
+      padding: 11px;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .scene-btn:hover { border-color: var(--cyan); }
+    .scene-btn.active {
+      background: #24232a;
+      border-color: var(--gold);
+    }
+    .scene-title {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    .scene-meta {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+    .reader {
+      min-width: 0;
+      overflow: auto;
+      padding: 24px;
+    }
+    .reader-card {
+      max-width: 920px;
+      padding: 22px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .reader h3 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.4;
+      overflow-wrap: anywhere;
+    }
+    .reader-meta {
+      margin: 7px 0 20px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .basis {
+      margin: 0 0 18px;
+      padding-left: 12px;
+      color: #c5ccd5;
+      font-size: 13px;
+      line-height: 1.75;
+      border-left: 3px solid var(--gold);
+    }
+    .scene-copy p {
+      margin: 0 0 1em;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+    .detail-section {
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+    .detail-section h4 {
+      margin: 0 0 9px;
+      color: var(--cyan);
+      font-size: 13px;
+    }
+    .detail-section p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    .play-list {
+      display: grid;
+      gap: 9px;
+    }
+    .play-row {
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(49, 54, 64, 0.72);
+    }
+    .play-row:last-child { border-bottom: 0; }
+    .play-name {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+    .play-meta {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+    .empty {
+      padding: 28px;
+      color: var(--muted);
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+    }
+    .error { color: var(--red); }
+    @media (max-width: 900px) {
+      .shell { grid-template-columns: 1fr; }
+      aside {
+        min-height: 58vh;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .book-list { max-height: 38vh; }
+      .topbar { align-items: flex-start; }
+      .workspace { grid-template-columns: 1fr; }
+      .scene-list {
+        max-height: 42vh;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+    @media (max-width: 560px) {
+      .topbar { flex-direction: column; }
+      .top-actions { width: 100%; }
+      .command-btn { flex: 1; }
+      .reader { padding: 14px; }
+      .reader-card { padding: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <header>
+        <div class="eyebrow">Scene-first collection</div>
+        <h1>极品调教剧情场景</h1>
+        <p class="subtitle">按小说类型、小说与场景浏览最新剧情片段，内容与发布版快速回复保持一致。</p>
+      </header>
+      <section class="stats" id="stats"></section>
+      <nav class="page-links" aria-label="浏览方式">
+        <a href="./">按书分类</a>
+        <a href="category.html">按玩法分类</a>
+        <a class="active" href="scenes.html">剧情场景</a>
+        <a href="legacy.html">旧版原始页</a>
+      </nav>
+      <section class="downloads">
+        <a class="download" href="创意/成品/v2/剧情片段/极品调教快捷回复_v2_剧情片段_整合版.json" download>剧情场景快速回复 <span>JSON</span></a>
+        <a class="download" href="创意/成品/v2/剧情片段/剧情片段索引_v2_整合版.json">剧情场景索引 <span>JSON</span></a>
+      </section>
+      <section class="filters">
+        <input id="query" type="search" placeholder="搜索小说、场景或玩法关键词" aria-label="搜索剧情场景">
+        <select id="typeFilter" aria-label="小说类型"></select>
+      </section>
+      <nav class="book-list" id="bookList" aria-label="小说列表"></nav>
+    </aside>
+    <main>
+      <section class="topbar">
+        <div>
+          <h2 id="activeTitle">载入中</h2>
+          <p id="activeMeta">正在读取剧情场景发布数据</p>
+        </div>
+        <div class="top-actions">
+          <button class="icon-btn" id="previousScene" type="button" title="上一个场景" aria-label="上一个场景">←</button>
+          <button class="command-btn" id="randomScene" type="button">随机场景</button>
+          <button class="icon-btn" id="nextScene" type="button" title="下一个场景" aria-label="下一个场景">→</button>
+        </div>
+      </section>
+      <section class="workspace">
+        <div class="scene-list" id="sceneList"></div>
+        <article class="reader" id="reader"></article>
+      </section>
+    </main>
+  </div>
+  <script>
+    const dataUrl = "创意/成品/v2/剧情片段/剧情片段网页数据.json";
+    const state = {
+      data: null,
+      query: "",
+      type: "全部类型",
+      activeBookKey: "",
+      activeSceneOrder: 0
+    };
+
+    const nodes = {
+      stats: document.getElementById("stats"),
+      query: document.getElementById("query"),
+      typeFilter: document.getElementById("typeFilter"),
+      bookList: document.getElementById("bookList"),
+      activeTitle: document.getElementById("activeTitle"),
+      activeMeta: document.getElementById("activeMeta"),
+      sceneList: document.getElementById("sceneList"),
+      reader: document.getElementById("reader"),
+      previousScene: document.getElementById("previousScene"),
+      randomScene: document.getElementById("randomScene"),
+      nextScene: document.getElementById("nextScene")
+    };
+
+    function element(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    function searchableScene(scene) {
+      const plays = (scene.linked_play_entries || []).flatMap((item) => [
+        item.title,
+        item.category,
+        item.subcategory,
+        ...(item.tags || [])
+      ]);
+      return [
+        scene.title,
+        scene.stage_code,
+        scene.source_basis,
+        scene.plot_fragment,
+        scene.continuation_gate,
+        scene.adapter_instruction,
+        ...plays
+      ].join(" ").toLocaleLowerCase();
+    }
+
+    function bookMatches(book) {
+      if (state.type !== "全部类型" && book.source_type !== state.type) return false;
+      if (!state.query) return true;
+      const query = state.query.toLocaleLowerCase();
+      if (`${book.source_label} ${book.source_type}`.toLocaleLowerCase().includes(query)) return true;
+      return book.fragments.some((scene) => searchableScene(scene).includes(query));
+    }
+
+    function sceneMatches(scene) {
+      if (!state.query) return true;
+      return searchableScene(scene).includes(state.query.toLocaleLowerCase());
+    }
+
+    function visibleBooks() {
+      return state.data.books.filter(bookMatches);
+    }
+
+    function activeBook() {
+      return state.data.books.find((book) => book.source_key === state.activeBookKey) || null;
+    }
+
+    function visibleScenes(book = activeBook()) {
+      return book ? book.fragments.filter(sceneMatches) : [];
+    }
+
+    function activeScene() {
+      const book = activeBook();
+      return book?.fragments.find((scene) => scene.order === state.activeSceneOrder) || null;
+    }
+
+    function restoreHash() {
+      const params = new URLSearchParams(location.hash.replace(/^#/, ""));
+      state.activeBookKey = params.get("book") || "";
+      state.activeSceneOrder = Number(params.get("scene") || 0);
+    }
+
+    function updateHash() {
+      if (!state.activeBookKey || !state.activeSceneOrder) return;
+      const params = new URLSearchParams({
+        book: state.activeBookKey,
+        scene: String(state.activeSceneOrder)
+      });
+      history.replaceState(null, "", `#${params.toString()}`);
+    }
+
+    function ensureSelection() {
+      const books = visibleBooks();
+      if (!books.some((book) => book.source_key === state.activeBookKey)) {
+        state.activeBookKey = books[0]?.source_key || "";
+        state.activeSceneOrder = 0;
+      }
+      const scenes = visibleScenes();
+      if (!scenes.some((scene) => scene.order === state.activeSceneOrder)) {
+        state.activeSceneOrder = scenes[0]?.order || 0;
+      }
+    }
+
+    function renderStats() {
+      const stats = [
+        [state.data.book_count, "收录小说"],
+        [state.data.fragment_count, "剧情场景"],
+        [state.data.type_order.length, "小说类型"],
+        [state.data.generated_date, "数据日期"]
+      ];
+      nodes.stats.replaceChildren(...stats.map(([value, label]) => {
+        const wrapper = element("div", "stat");
+        wrapper.append(element("strong", "", value), element("span", "", label));
+        return wrapper;
+      }));
+    }
+
+    function renderTypeFilter() {
+      const options = ["全部类型", ...state.data.type_order];
+      nodes.typeFilter.replaceChildren(...options.map((value) => {
+        const option = element("option", "", value);
+        option.value = value;
+        option.selected = value === state.type;
+        return option;
+      }));
+    }
+
+    function renderBooks() {
+      const books = visibleBooks();
+      if (!books.length) {
+        nodes.bookList.replaceChildren(element("div", "empty", "没有符合条件的小说。"));
+        return;
+      }
+      nodes.bookList.replaceChildren(...books.map((book) => {
+        const button = element("button", `book-btn${book.source_key === state.activeBookKey ? " active" : ""}`);
+        button.type = "button";
+        const label = element("span", "book-title", book.source_label);
+        label.append(element("small", "book-type", book.source_type));
+        button.append(label, element("span", "count-pill", book.fragment_count));
+        button.addEventListener("click", () => {
+          state.activeBookKey = book.source_key;
+          state.activeSceneOrder = book.fragments.find(sceneMatches)?.order || 0;
+          renderAll();
+        });
+        return button;
+      }));
+    }
+
+    function renderScenes() {
+      const book = activeBook();
+      const scenes = visibleScenes(book);
+      if (!book || !scenes.length) {
+        nodes.sceneList.replaceChildren(element("div", "empty", "当前小说下没有符合条件的场景。"));
+        return;
+      }
+      nodes.sceneList.replaceChildren(...scenes.map((scene) => {
+        const button = element("button", `scene-btn${scene.order === state.activeSceneOrder ? " active" : ""}`);
+        button.type = "button";
+        button.append(
+          element("div", "scene-title", `${String(scene.order).padStart(2, "0")}. ${scene.title}`),
+          element("div", "scene-meta", `${scene.stage_code || "场景"} · 联动 ${(scene.linked_play_entries || []).length} 条玩法`)
+        );
+        button.addEventListener("click", () => {
+          state.activeSceneOrder = scene.order;
+          renderAll();
+          revealReaderOnNarrowViewport();
+        });
+        return button;
+      }));
+    }
+
+    function renderReader() {
+      const book = activeBook();
+      const scene = activeScene();
+      if (!book || !scene) {
+        nodes.reader.replaceChildren(element("div", "empty", "请选择一个剧情场景。"));
+        return;
+      }
+
+      const card = element("div", "reader-card");
+      card.append(
+        element("h3", "", scene.title),
+        element("div", "reader-meta", `${book.source_label} · ${book.source_type} · ${scene.stage_code || "独立场景"}`),
+        element("p", "basis", scene.source_basis)
+      );
+
+      const copy = element("section", "scene-copy");
+      scene.plot_fragment.split(/\n\s*\n/).filter(Boolean).forEach((paragraph) => {
+        copy.append(element("p", "", paragraph));
+      });
+      card.append(copy);
+
+      const gate = element("section", "detail-section");
+      gate.append(element("h4", "", "开放停顿点"), element("p", "", scene.continuation_gate));
+      card.append(gate);
+
+      const adapter = element("section", "detail-section");
+      adapter.append(element("h4", "", "接入要求"), element("p", "", scene.adapter_instruction));
+      card.append(adapter);
+
+      const plays = element("section", "detail-section");
+      plays.append(element("h4", "", "联动玩法"));
+      const list = element("div", "play-list");
+      (scene.linked_play_entries || []).forEach((play) => {
+        const row = element("div", "play-row");
+        row.append(
+          element("div", "play-name", `uid ${play.uid} · ${play.title}`),
+          element("div", "play-meta", [play.category, play.subcategory, ...(play.tags || [])].filter(Boolean).join(" · "))
+        );
+        list.append(row);
+      });
+      plays.append(list);
+      card.append(plays);
+      nodes.reader.replaceChildren(card);
+    }
+
+    function renderTopbar() {
+      const book = activeBook();
+      const scenes = visibleScenes(book);
+      const scene = activeScene();
+      nodes.activeTitle.textContent = book?.source_label || "没有可显示的小说";
+      nodes.activeMeta.textContent = book
+        ? `${book.source_type} · 当前显示 ${scenes.length} / ${book.fragment_count} 条场景`
+        : "请调整搜索或类型筛选";
+      const index = scenes.findIndex((item) => item.order === scene?.order);
+      nodes.previousScene.disabled = index <= 0;
+      nodes.nextScene.disabled = index < 0 || index >= scenes.length - 1;
+      nodes.randomScene.disabled = visibleBooks().length === 0;
+    }
+
+    function renderAll() {
+      ensureSelection();
+      renderBooks();
+      renderScenes();
+      renderReader();
+      renderTopbar();
+      updateHash();
+    }
+
+    function revealReaderOnNarrowViewport() {
+      if (window.matchMedia("(max-width: 900px)").matches) {
+        nodes.reader.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function moveScene(offset) {
+      const scenes = visibleScenes();
+      const index = scenes.findIndex((scene) => scene.order === state.activeSceneOrder);
+      const next = scenes[index + offset];
+      if (!next) return;
+      state.activeSceneOrder = next.order;
+      renderAll();
+      revealReaderOnNarrowViewport();
+    }
+
+    function chooseRandomScene() {
+      const candidates = visibleBooks().flatMap((book) =>
+        book.fragments.filter(sceneMatches).map((scene) => ({ book, scene }))
+      );
+      if (!candidates.length) return;
+      const pick = candidates[Math.floor(Math.random() * candidates.length)];
+      state.activeBookKey = pick.book.source_key;
+      state.activeSceneOrder = pick.scene.order;
+      renderAll();
+      revealReaderOnNarrowViewport();
+    }
+
+    nodes.query.addEventListener("input", (event) => {
+      state.query = event.target.value.trim();
+      renderAll();
+    });
+    nodes.typeFilter.addEventListener("change", (event) => {
+      state.type = event.target.value;
+      renderAll();
+    });
+    nodes.previousScene.addEventListener("click", () => moveScene(-1));
+    nodes.nextScene.addEventListener("click", () => moveScene(1));
+    nodes.randomScene.addEventListener("click", chooseRandomScene);
+
+    fetch(dataUrl)
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then((data) => {
+        state.data = data;
+        restoreHash();
+        renderStats();
+        renderTypeFilter();
+        renderAll();
+      })
+      .catch((error) => {
+        nodes.activeTitle.textContent = "剧情场景载入失败";
+        nodes.activeMeta.textContent = error.message;
+        nodes.reader.replaceChildren(element("div", "empty error", "请确认网页通过 HTTP 服务打开，且剧情片段网页数据文件已经发布。"));
+      });
+  </script>
+</body>
+</html>
