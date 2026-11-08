@@ -191,7 +191,7 @@
     main {
       min-width: 0;
       display: grid;
-      grid-template-rows: auto minmax(0, 1fr);
+      grid-template-rows: auto auto minmax(0, 1fr);
     }
     .topbar {
       display: flex;
@@ -216,6 +216,28 @@
       color: var(--green);
       font-size: 12px;
       white-space: nowrap;
+    }
+    .subcategory-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .tab {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 12px;
+      white-space: nowrap;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .tab.active {
+      border-color: var(--cyan);
+      color: #071114;
+      background: var(--cyan);
     }
     .workspace {
       min-height: 0;
@@ -306,7 +328,7 @@
       <header>
         <div class="eyebrow">Source-driven v2</div>
         <h1>极品调教大世界书</h1>
-        <p class="subtitle">同一份 v2 数据，按玩法分类浏览；每个分类下一层就是实际条目。</p>
+        <p class="subtitle">同一份 v2 数据，按十二卷与百合/TSF特殊分类 → 子分类 → 条目三级浏览。</p>
       </header>
       <section class="stats" id="stats"></section>
       <nav class="page-links" aria-label="浏览方式">
@@ -335,6 +357,7 @@
         </div>
         <div class="status" id="status">loading</div>
       </section>
+      <section class="subcategory-tabs" id="subcategoryTabs"></section>
       <section class="workspace">
         <div class="entry-list" id="entryList"></div>
         <article class="reader" id="reader"></article>
@@ -344,6 +367,8 @@
   <script>
     const manifestUrl = "创意/成品/v2/资料源索引_v2.json";
     const worldbookUrl = "创意/成品/v2/极品调教大世界书_v2.json";
+    const YURI_SPECIAL_CAT = "特殊分类：百合关系与破坏";
+    const TSF_SPECIAL_CAT = "特殊分类：TSF性转与雌竞";
     const categoryOrder = [
       "卷一：极致恶堕与崩坏",
       "卷二：深度规训与服从",
@@ -355,7 +380,9 @@
       "卷九：公开暴露与社死",
       "卷十：强制发情与体质改造",
       "卷十一：服装与换装Play",
-      "卷十二：纯爱与温存"
+      "卷十二：纯爱与温存",
+      YURI_SPECIAL_CAT,
+      TSF_SPECIAL_CAT
     ];
     const state = {
       manifest: null,
@@ -363,6 +390,7 @@
       entries: [],
       byUid: new Map(),
       activeCategory: "",
+      activeSubcategory: "全部",
       query: "",
       type: "全部",
       activeUid: null
@@ -382,6 +410,18 @@
       if (ia !== -1 || ib !== -1) return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
       return a.localeCompare(b, "zh-CN");
     });
+
+    function entrySubcategoryFor(entry, category = state.activeCategory) {
+      if (category === YURI_SPECIAL_CAT) return entry.yuri_index_subcategory || "百合关系";
+      if (category === TSF_SPECIAL_CAT) return entry.tsf_index_subcategory || "TSF性转";
+      return entry.subcategory || "综合";
+    }
+
+    function entryMatchesCategory(entry, category = state.activeCategory) {
+      if (category === YURI_SPECIAL_CAT) return Boolean(entry.yuri_index_subcategory);
+      if (category === TSF_SPECIAL_CAT) return Boolean(entry.tsf_index_subcategory);
+      return entry.category === category;
+    }
 
     async function loadData() {
       try {
@@ -419,6 +459,7 @@
       renderStats();
       renderTypeFilter();
       renderCategories();
+      renderSubcategoryTabs();
       renderEntries();
       renderReader();
     }
@@ -430,7 +471,7 @@
       $("stats").innerHTML = [
         ["版本", String(m.version || "").replace("-source-rebuild", "")],
         ["条目", state.entries.length],
-        ["分类", categoryCount],
+        ["分类", `${categoryCount}+2`],
         ["来源", importedSources]
       ].map(([label, value]) => `<div class="stat"><strong>${esc(value)}</strong><span>${esc(label)}</span></div>`).join("");
     }
@@ -445,17 +486,34 @@
       return state.entries.filter((entry) => {
         if (state.type !== "全部" && entry.source_type !== state.type) return false;
         if (!q) return true;
-        return [entry.title, entry.source_label, entry.source_type, entry.category, entry.subcategory]
-          .join("\n").toLowerCase().includes(q);
+        return [
+          entry.title,
+          entry.source_label,
+          entry.source_type,
+          entry.category,
+          entry.subcategory,
+          entry.yuri_index_subcategory,
+          entry.tsf_index_subcategory
+        ].join("\n").toLowerCase().includes(q);
       });
     }
 
     function renderCategories() {
       const counts = new Map();
-      filteredEntries().forEach((entry) => counts.set(entry.category, (counts.get(entry.category) || 0) + 1));
+      const filtered = filteredEntries();
+      filtered.forEach((entry) => {
+        counts.set(entry.category, (counts.get(entry.category) || 0) + 1);
+        if (entry.yuri_index_subcategory) {
+          counts.set(YURI_SPECIAL_CAT, (counts.get(YURI_SPECIAL_CAT) || 0) + 1);
+        }
+        if (entry.tsf_index_subcategory) {
+          counts.set(TSF_SPECIAL_CAT, (counts.get(TSF_SPECIAL_CAT) || 0) + 1);
+        }
+      });
       const categories = sortedCategories(counts.keys());
       if (categories.length && !counts.has(state.activeCategory)) {
         state.activeCategory = categories[0];
+        state.activeSubcategory = "全部";
         state.activeUid = null;
       }
       $("categoryList").innerHTML = categories.map((category) => `
@@ -467,13 +525,32 @@
     }
 
     function categoryEntries() {
-      return filteredEntries().filter((entry) => entry.category === state.activeCategory);
+      return filteredEntries().filter((entry) => entryMatchesCategory(entry, state.activeCategory));
+    }
+
+    function renderSubcategoryTabs() {
+      const entries = categoryEntries();
+      const counts = new Map();
+      counts.set("全部", entries.length);
+      entries.forEach((entry) => {
+        const sub = entrySubcategoryFor(entry, state.activeCategory);
+        counts.set(sub, (counts.get(sub) || 0) + 1);
+      });
+      if (!counts.has(state.activeSubcategory)) {
+        state.activeSubcategory = "全部";
+      }
+      $("subcategoryTabs").innerHTML = [...counts.entries()].map(([sub, count]) => `
+        <button class="tab ${sub === state.activeSubcategory ? "active" : ""}" data-subcategory="${esc(sub)}">
+          ${esc(sub)} (${count})
+        </button>
+      `).join("");
     }
 
     function visibleEntries() {
       return categoryEntries()
+        .filter((entry) => state.activeSubcategory === "全部" || entrySubcategoryFor(entry, state.activeCategory) === state.activeSubcategory)
         .sort((a, b) =>
-          (a.subcategory || "").localeCompare(b.subcategory || "", "zh-CN") ||
+          entrySubcategoryFor(a, state.activeCategory).localeCompare(entrySubcategoryFor(b, state.activeCategory), "zh-CN") ||
           (a.source_type || "").localeCompare(b.source_type || "", "zh-CN") ||
           (a.source_label || "").localeCompare(b.source_label || "", "zh-CN") ||
           a.title.localeCompare(b.title, "zh-CN")
@@ -483,7 +560,8 @@
     function renderEntries() {
       const entries = visibleEntries();
       $("activeTitle").textContent = cleanCategory(state.activeCategory) || "未选择分类";
-      $("activeMeta").textContent = entries.length ? `${entries.length} 条 · ${state.manifest.version || ""}` : "没有匹配条目";
+      const subLabel = state.activeSubcategory === "全部" ? "全部子类" : state.activeSubcategory;
+      $("activeMeta").textContent = entries.length ? `${subLabel} · ${entries.length} 条 · ${state.manifest.version || ""}` : "没有匹配条目";
       if (!entries.length) {
         state.activeUid = null;
       } else if (!entries.some((entry) => entry.uid === state.activeUid)) {
@@ -492,7 +570,7 @@
       $("entryList").innerHTML = entries.map((entry) => `
         <button class="entry-btn ${entry.uid === state.activeUid ? "active" : ""}" data-uid="${entry.uid}">
           <div class="entry-title">${esc(entry.title)}</div>
-          <div class="entry-meta">${esc(entry.subcategory || "综合")} · ${esc(entry.source_label)} · ${esc(entry.source_type)}</div>
+          <div class="entry-meta">${esc(entrySubcategoryFor(entry, state.activeCategory))} · ${esc(entry.source_label)} · ${esc(entry.source_type)}</div>
         </button>
       `).join("") || '<div class="empty">没有匹配条目。</div>';
     }
@@ -507,7 +585,7 @@
       $("reader").innerHTML = `
         <div class="reader-card">
           <h3>${esc(meta.title)}</h3>
-          <div class="meta">UID ${esc(meta.uid)} · ${esc(cleanCategory(meta.category))} · ${esc(meta.subcategory || "综合")} · ${esc(meta.source_label)}</div>
+          <div class="meta">UID ${esc(meta.uid)} · ${esc(cleanCategory(meta.category))} · ${esc(entrySubcategoryFor(meta, state.activeCategory))} · ${esc(meta.source_label)}</div>
           <div class="content">${esc(entry.content || "")}</div>
         </div>
       `;
@@ -517,6 +595,7 @@
       state.query = event.target.value;
       state.activeUid = null;
       renderCategories();
+      renderSubcategoryTabs();
       renderEntries();
       renderReader();
     });
@@ -524,6 +603,7 @@
       state.type = event.target.value;
       state.activeUid = null;
       renderCategories();
+      renderSubcategoryTabs();
       renderEntries();
       renderReader();
     });
@@ -531,8 +611,19 @@
       const btn = event.target.closest(".category-btn");
       if (!btn) return;
       state.activeCategory = btn.dataset.category;
+      state.activeSubcategory = "全部";
       state.activeUid = null;
       renderCategories();
+      renderSubcategoryTabs();
+      renderEntries();
+      renderReader();
+    });
+    $("subcategoryTabs").addEventListener("click", (event) => {
+      const btn = event.target.closest(".tab");
+      if (!btn) return;
+      state.activeSubcategory = btn.dataset.subcategory;
+      state.activeUid = null;
+      renderSubcategoryTabs();
       renderEntries();
       renderReader();
     });
