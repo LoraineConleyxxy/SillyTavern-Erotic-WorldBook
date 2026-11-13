@@ -1,10 +1,10 @@
 {
   "schema": "plot_fragment_integrated_public_index_v0.1",
-  "generated_date": "2026-07-30",
+  "generated_date": "2026-11-13",
   "qr_file": "极品调教快捷回复_v2_剧情片段_整合版.json",
   "source_dir": "剧情片段网页数据.json",
   "shape": {
-    "root": "剧情片段",
+    "root": "剧情玩法",
     "first_level": "小说类型",
     "second_level": "小说名",
     "third_level": "片段名"
